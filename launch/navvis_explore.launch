@@ -1,0 +1,14 @@
+<launch>
+  <arg name="use_new_robot" default="true" />
+  <arg name="bag_file_location" default="$(find navvis_explore)/bag/glennan_5_complete.bag" />
+  <arg if="$(arg use_new_robot)" name="config_file_name" default="config_w_map.rviz" />
+
+  <group if="$(arg use_new_robot)">
+    <param if="$(arg use_new_robot)" name="robot_description" command="$(find xacro)/xacro --inorder $(find navvis_explore)/urdf/navvis_explore.xacro" />
+    <param name="/use_sim_time" value="true" />
+    <node pkg="map_server" type="map_server" name="map_server" args="$(find maps_glennan)/maps/glennan5_map.yaml --clock" />
+    <node pkg="rosbag" type="play" name="rosbag" args="--clock $(arg bag_file_location) /tf_trajectory:=/tf" />
+  </group>
+
+  <include file="$(find navvis_description)/launch/navvis.launch" pass_all_args="true"/>
+</launch>
